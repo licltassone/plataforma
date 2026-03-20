@@ -223,6 +223,19 @@ textarea::placeholder{color:var(--muted2)}
       <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••"></div>
       <button class="btn-primary" onclick="login()">Ingresar →</button>
       <div class="auth-error" id="login-err"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button onclick="showReset()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline">Olvidé mi contraseña</button>
+      </div>
+    </div>
+
+    <div id="auth-reset" class="auth-panel">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">Ingresá tu email y te mandamos un link para resetear tu contraseña.</div>
+      <div class="field"><label>Email</label><input type="email" id="reset-email" placeholder="tu@email.com"></div>
+      <button class="btn-primary" onclick="resetPassword()">Enviar link →</button>
+      <div class="auth-error" id="reset-err"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button onclick="showLogin()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline">← Volver al login</button>
+      </div>
     </div>
 
     <div id="auth-register" class="auth-panel">
@@ -443,6 +456,26 @@ function authTab(tab) {
   document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
   event.target.classList.add('active');
   document.getElementById('auth-' + tab).classList.add('active');
+}
+
+async function resetPassword() {
+  const email = document.getElementById('reset-email').value.trim();
+  document.getElementById('reset-err').textContent = '';
+  if (!email) { document.getElementById('reset-err').textContent = 'Ingresá tu email.'; return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email);
+  if (error) { document.getElementById('reset-err').textContent = 'Error al enviar. Revisá el email.'; return; }
+  document.getElementById('reset-err').style.color = 'var(--accent-text)';
+  document.getElementById('reset-err').textContent = 'Link enviado. Revisá tu email.';
+}
+
+function showReset() {
+  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('auth-reset').classList.add('active');
+}
+
+function showLogin() {
+  document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('auth-login').classList.add('active');
 }
 
 async function login() {
